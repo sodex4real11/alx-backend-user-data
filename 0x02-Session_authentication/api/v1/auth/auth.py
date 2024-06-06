@@ -1,58 +1,90 @@
 #!/usr/bin/env python3
+""" Module of auth
 """
-Definition of class Auth
-"""
+from os import getenv
 from flask import request
-from typing import (
-    List,
-    TypeVar
-)
+from typing import List, TypeVar
 
 
 class Auth:
-    """
-    Manages the API authentication
-    """
+    """ Auth Class """
+
+    def __init__(self):
+        """
+            Constructor
+
+            Args:
+                path: path to authenticate
+                excluded_paths: list of excluded path to authenticate
+        """
+
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
-        Determines whether a given path requires authentication or not
-        Args:
-            - path(str): Url path to be checked
-            - excluded_paths(List of str): List of paths that do not require
-              authentication
-        Return:
-            - True if path is not in excluded_paths, else False
+            Require the auth
+
+            Args:
+                path: path to authenticate
+                excluded_paths: list of excluded path to authenticate
+
+            Return:
+                True if is authenticated otherwise false
         """
-        if path is None:
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
             return True
-        elif excluded_paths is None or excluded_paths == []:
-            return True
-        elif path in excluded_paths:
-            return False
-        else:
-            for i in excluded_paths:
-                if i.startswith(path):
+
+        if path[-1] is not '/':
+            path += '/'
+
+        for paths in excluded_paths:
+            if paths.endswith('*'):
+                if path.startswith(paths[:-1]):
                     return False
-                if path.startswith(i):
-                    return False
-                if i[-1] == "*":
-                    if path.startswith(i[:-1]):
-                        return False
+            elif path == paths:
+                return False
+
         return True
 
     def authorization_header(self, request=None) -> str:
         """
-        Returns the authorization header from a request object
+            Look the headers
+
+            Args:
+                request: Look the autthorization
+
+            Return:
+                The authorization header or None
         """
         if request is None:
             return None
-        header = request.headers.get('Authorization')
-        if header is None:
-            return None
-        return header
+
+        return request.headers.get('Authorization', None)
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
-        Returns a User instance from information from a request object
+            Look current user
+
+            Args:
+                request: Look the reques user
+
+            Return:
+                The user
         """
         return None
+
+    def session_cookie(self, request=None):
+        """
+            Cookie value
+
+            Args:
+                request: Get the cookie session
+
+            Return:
+                Cookie session
+        """
+        if request is None:
+            return None
+
+        session_env = getenv('SESSION_NAME', None)
+        cookie_sess = request.cookies.get(session_env, None)
+
+        return cookie_sess

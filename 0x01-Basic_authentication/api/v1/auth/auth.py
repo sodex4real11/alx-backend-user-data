@@ -55,4 +55,4 @@ class Auth:
         """
         Returns a User instance from information from a request object
         """
-        return None 
+        return None

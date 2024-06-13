@@ -2,6 +2,7 @@
 """_summary_
 """
 
+
 import bcrypt
 from db import DB
 from user import User
@@ -9,6 +10,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from uuid import uuid4
 
 from typing import Union
+
 
 def _hash_password(password: str) -> str:
     """_summary_
@@ -21,6 +23,7 @@ def _hash_password(password: str) -> str:
     """
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
+
 def _generate_uuid() -> str:
     """_summary_
 
@@ -32,6 +35,7 @@ def _generate_uuid() -> str:
     """
     id = uuid4()
     return str(id)
+
 
 class Auth:
     """Auth class to interact with the authentication database.
